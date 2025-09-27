@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Drag Background & Image Change</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+    .container {
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      transition: background 0.5s ease;
+      background: linear-gradient(120deg, #ff7e5f, #feb47b);
+    }
+    .images {
+      position: relative;
+      width: 400px;
+      height: 250px;
+      margin-bottom: 50px;
+      overflow: hidden;
+      border-radius: 20px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    }
+    .images img {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    .images img.active {
+      opacity: 1;
+    }
+    .drag-area {
+      position: relative;
+      width: 500px;
+      height: 10px;
+      background: #ddd;
+      border-radius: 5px;
+    }
+    .handle {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      transform: translate(-50%, -50%);
+      width: 40px;
+      height: 40px;
+      background: #fff;
+      border-radius: 50%;
+      cursor: grab;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="container">
+    <div class="images">
+      <img src="https://picsum.photos/id/1015/600/400" class="active">
+      <img src="https://picsum.photos/id/1025/600/400">
+      <img src="https://picsum.photos/id/1035/600/400">
+    </div>
+    <div class="drag-area">
+      <div class="handle" id="handle"></div>
+    </div>
+  </div>
+
+  <!-- GSAP & Draggable -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/Draggable.min.js"></script>
+
+  <script>
+    const container = document.getElementById("container");
+    const handle = document.getElementById("handle");
+    const images = document.querySelectorAll(".images img");
+
+    const colors = [
+      "linear-gradient(120deg, #ff7e5f, #feb47b)",
+      "linear-gradient(120deg, #43cea2, #185a9d)",
+      "linear-gradient(120deg, #ff512f, #dd2476)"
+    ];
+
+    // Make handle draggable
+    Draggable.create(handle, {
+      type: "x",
+      bounds: ".drag-area",
+      onDrag: function () {
+        let progress = this.x / (this.maxX || 1); // normalized 0-1
+        let index = Math.round(progress * (images.length - 1));
+
+        // Change background smoothly
+        gsap.to(container, {
+          background: colors[index],
+          duration: 0.5,
+          ease: "power2.out"
+        });
+
+        // Change images
+        images.forEach((img, i) => {
+          img.classList.toggle("active", i === index);
+        });
+      }
+    });
+  </script>
+</body>
+</html>
+<img src="" alt="">
